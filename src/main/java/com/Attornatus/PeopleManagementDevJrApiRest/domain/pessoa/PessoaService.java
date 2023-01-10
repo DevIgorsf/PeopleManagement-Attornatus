@@ -69,17 +69,17 @@ public class PessoaService {
     }
 
     public EnderecoDto criarEndereco(UUID id, EnderecoForm form) {
-        var enderecoCriado = new Endereco(form);
-        Endereco enderecoSalvo = enderecoRepository.save(enderecoCriado);
-
         Optional<Pessoa> pessoaOptional = pessoaRepository.findById(id);
 
-        if( pessoaOptional.isEmpty()) {
+        if(pessoaOptional.isEmpty()){
             throw new EntityNotFoundException("Pessoa não encontrada");
         }
-        
-        pessoaOptional.get().adicionarEndereco(enderecoSalvo);
-        
+        Pessoa pessoa = pessoaOptional.get();
+
+        Endereco enderecoCriado = new Endereco(form);
+        enderecoCriado.setPessoa(pessoa);
+
+        Endereco enderecoSalvo = enderecoRepository.save(enderecoCriado);
 
         return new EnderecoDto(enderecoSalvo);
     }

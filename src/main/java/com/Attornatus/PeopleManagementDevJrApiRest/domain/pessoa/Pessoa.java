@@ -56,7 +56,7 @@ public class Pessoa {
     public void ativaEndereco(UUID id) {
         this.enderecoLista.forEach(
                 endereco -> {
-                    if(endereco.getId() == id) {
+                    if(endereco.getId().equals(id)) {
                         endereco.ativarEndereco(true);
                     }else {
                         endereco.ativarEndereco(false);
@@ -67,7 +67,7 @@ public class Pessoa {
 
     public boolean buscaEndereco(UUID enderecoId) {
         for (Endereco endereco: this.getEnderecoLista()) {
-            if(endereco.getId() == enderecoId) {
+            if(endereco.getId().equals(enderecoId)) {
                 return true;
             }
         }

@@ -31,7 +31,7 @@ public class PessoaController {
         return ResponseEntity.status(HttpStatus.OK).body(usuarioService.buscarPessoa(id));
     }
 
-    @GetMapping("/{nome}")
+    @GetMapping("/nome/{nome}")
     public ResponseEntity<PessoaDto> buscarPessoaPorNome(@PathVariable String nome) {
         return ResponseEntity.status(HttpStatus.OK).body(usuarioService.buscarPessoaPorNome(nome));
     }
@@ -55,7 +55,7 @@ public class PessoaController {
 
     @PostMapping("/{id}/ativaEndereco/{enderecoId}")
     @Transactional
-    public ResponseEntity<List<EnderecoDto>> AtivaEndereco(@PathVariable UUID id, UUID enderecoId) {
+    public ResponseEntity<List<EnderecoDto>> AtivaEndereco(@PathVariable UUID id, @PathVariable UUID enderecoId) {
         return ResponseEntity.status(HttpStatus.OK).body(usuarioService.AtivaEndereco(id, enderecoId));
     }
 

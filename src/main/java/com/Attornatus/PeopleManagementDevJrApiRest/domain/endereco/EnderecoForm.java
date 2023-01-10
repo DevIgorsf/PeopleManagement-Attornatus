@@ -5,14 +5,14 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 
 public record EnderecoForm(
-        @NotBlank
+        @NotBlank(message = "Logradouro é obrigatório")
         String logradouro,
-        @NotBlank
-        @Pattern(regexp = "\\d{8}")
+        @NotBlank(message = "Cep é obrigatório")
+        @Pattern(regexp = "\\d{8}", message = "Formato é de 8 números")
         String cep,
-        @NotBlank
-        @Positive
+        @NotBlank(message = "Número é obrigatório")
+        @Positive(message = "Número deve ser positivo")
         String numero,
-        @NotBlank
+        @NotBlank(message = "Cidade é obrigatório")
         String cidade ) {
 }
