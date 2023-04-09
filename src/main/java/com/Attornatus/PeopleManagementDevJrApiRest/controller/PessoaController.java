@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.UUID;
 
@@ -17,50 +16,54 @@ import java.util.UUID;
 @RequestMapping("/pessoa")
 public class PessoaController {
 
+    private final PessoaService pessoaService;
+
     @Autowired
-    private PessoaService usuarioService;
+    public PessoaController(PessoaService pessoaService) {
+        this.pessoaService = pessoaService;
+    }
 
     @PostMapping
     @Transactional
     public ResponseEntity<PessoaDto> criarPessoa(@RequestBody @Valid PessoaCadastro form) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(usuarioService.criarPessoa(form));
+        return ResponseEntity.status(HttpStatus.CREATED).body(pessoaService.criarPessoa(form));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<PessoaDto> buscarPessoa(@PathVariable UUID id) {
-        return ResponseEntity.status(HttpStatus.OK).body(usuarioService.buscarPessoa(id));
+        return ResponseEntity.status(HttpStatus.OK).body(pessoaService.buscarPessoa(id));
     }
 
     @GetMapping("/nome/{nome}")
     public ResponseEntity<PessoaDto> buscarPessoaPorNome(@PathVariable String nome) {
-        return ResponseEntity.status(HttpStatus.OK).body(usuarioService.buscarPessoaPorNome(nome));
+        return ResponseEntity.status(HttpStatus.OK).body(pessoaService.buscarPessoaPorNome(nome));
     }
 
     @GetMapping
-    public ResponseEntity<List<PessoaDto>> ListarPessoas() {
-        return ResponseEntity.status(HttpStatus.OK).body(usuarioService.ListarPessoas());
+    public ResponseEntity<List<PessoaDto>> listarPessoas() {
+        return ResponseEntity.status(HttpStatus.OK).body(pessoaService.ListarPessoas());
     }
 
     @PutMapping
     @Transactional
     public ResponseEntity<PessoaDto> editarPessoa(@RequestBody @Valid PessoaAtualizacao form) {
-        return ResponseEntity.status(HttpStatus.OK).body(usuarioService.editarPessoa(form));
+        return ResponseEntity.status(HttpStatus.OK).body(pessoaService.editarPessoa(form));
     }
 
     @PostMapping("/{id}/endereco")
     @Transactional
     public ResponseEntity<EnderecoDto> criarEndereco(@PathVariable UUID id , @RequestBody @Valid EnderecoForm form) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(usuarioService.criarEndereco(id, form));
+        return ResponseEntity.status(HttpStatus.CREATED).body(pessoaService.criarEndereco(id, form));
     }
 
     @PostMapping("/{id}/ativaEndereco/{enderecoId}")
     @Transactional
-    public ResponseEntity<List<EnderecoDto>> AtivaEndereco(@PathVariable UUID id, @PathVariable UUID enderecoId) {
-        return ResponseEntity.status(HttpStatus.OK).body(usuarioService.AtivaEndereco(id, enderecoId));
+    public ResponseEntity<List<EnderecoDto>> ativaEndereco(@PathVariable UUID id, @PathVariable UUID enderecoId) {
+        return ResponseEntity.status(HttpStatus.OK).body(pessoaService.AtivaEndereco(id, enderecoId));
     }
 
     @GetMapping("/{id}/endereco")
-    public ResponseEntity<List<EnderecoDto>> ListaEndereco(@PathVariable UUID id) {
-        return ResponseEntity.status(HttpStatus.OK).body(usuarioService.ListaEndereco(id));
+    public ResponseEntity<List<EnderecoDto>> listaEndereco(@PathVariable UUID id) {
+        return ResponseEntity.status(HttpStatus.OK).body(pessoaService.ListaEndereco(id));
     }
 }

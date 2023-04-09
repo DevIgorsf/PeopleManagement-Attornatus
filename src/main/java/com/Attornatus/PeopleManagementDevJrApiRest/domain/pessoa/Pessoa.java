@@ -13,6 +13,7 @@ import java.util.UUID;
 @Table(name = "pessoas")
 @Entity(name = "Pessoa")
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Pessoa {

@@ -14,11 +14,15 @@ import java.util.UUID;
 @Service
 public class PessoaService {
 
-    @Autowired
     private PessoaRepository pessoaRepository;
-    
-    @Autowired
+
     private EnderecoRepository enderecoRepository;
+
+    @Autowired
+    public PessoaService(PessoaRepository pessoaRepository, EnderecoRepository enderecoRepository) {
+        this.pessoaRepository = pessoaRepository;
+        this.enderecoRepository = enderecoRepository;
+    }
 
     public PessoaDto criarPessoa(PessoaCadastro pessoaForm) {
         Pessoa pessoa = new Pessoa(pessoaForm);
@@ -53,6 +57,10 @@ public class PessoaService {
 
     public List<PessoaDto> ListarPessoas() {
         List<PessoaDto> pessoaLista = pessoaRepository.findAll().stream().map(PessoaDto::new).toList();
+
+        if(pessoaLista.isEmpty()) {
+            throw new EntityNotFoundException("Não há pessoas cadastradas");
+        }
 
         return pessoaLista;
     }
