@@ -45,10 +45,6 @@ public class Pessoa {
         this.enderecoLista.add(endereco);
     }
 
-    public void adicionarListaEndereco(List<Endereco> listaEndereco) {
-        this.enderecoLista = listaEndereco;
-    }
-
     public void atualizarInformacoes(PessoaAtualizacao form) {
         if (form.nome() != null) {
             this.nome = form.nome();
