@@ -1,5 +1,6 @@
 package com.Attornatus.PeopleManagementDevJrApiRest.controller;
 
+import com.Attornatus.PeopleManagementDevJrApiRest.domain.endereco.EnderecoAtualizacao;
 import com.Attornatus.PeopleManagementDevJrApiRest.domain.endereco.EnderecoDto;
 import com.Attornatus.PeopleManagementDevJrApiRest.domain.endereco.EnderecoForm;
 import com.Attornatus.PeopleManagementDevJrApiRest.domain.pessoa.PessoaAtualizacao;
@@ -58,6 +59,13 @@ public class PessoaController {
     @Transactional
     public ResponseEntity<EnderecoDto> criarEndereco(@PathVariable UUID id , @RequestBody @Valid EnderecoForm form) {
         return ResponseEntity.status(HttpStatus.CREATED).body(pessoaService.criarEndereco(id, form));
+    }
+
+    @PutMapping("/{id}/endereco/{enderecoId}")
+    @Transactional
+    public ResponseEntity<EnderecoDto> atualizarEndereco(
+            @PathVariable UUID id , @PathVariable UUID enderecoId, @RequestBody @Valid EnderecoAtualizacao form) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(pessoaService.atualizaEndereco(id, enderecoId, form));
     }
 
     @PostMapping("/{id}/ativaEndereco/{enderecoId}")

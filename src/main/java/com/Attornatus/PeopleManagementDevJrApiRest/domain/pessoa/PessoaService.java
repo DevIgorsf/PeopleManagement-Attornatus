@@ -1,9 +1,6 @@
 package com.Attornatus.PeopleManagementDevJrApiRest.domain.pessoa;
 
-import com.Attornatus.PeopleManagementDevJrApiRest.domain.endereco.Endereco;
-import com.Attornatus.PeopleManagementDevJrApiRest.domain.endereco.EnderecoDto;
-import com.Attornatus.PeopleManagementDevJrApiRest.domain.endereco.EnderecoForm;
-import com.Attornatus.PeopleManagementDevJrApiRest.domain.endereco.EnderecoRepository;
+import com.Attornatus.PeopleManagementDevJrApiRest.domain.endereco.*;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,9 +12,9 @@ import java.util.UUID;
 @Service
 public class PessoaService {
 
-    private PessoaRepository pessoaRepository;
+    private final PessoaRepository pessoaRepository;
 
-    private EnderecoRepository enderecoRepository;
+    private final EnderecoRepository enderecoRepository;
 
     @Autowired
     public PessoaService(PessoaRepository pessoaRepository, EnderecoRepository enderecoRepository) {
@@ -100,9 +97,7 @@ public class PessoaService {
             throw new EntityNotFoundException("Pessoa não encontrada");
         }
 
-        List<EnderecoDto> listaEndereco = pessoaOptional.get().getEnderecoLista().stream().map(EnderecoDto::new).toList();
-
-        return listaEndereco;
+        return pessoaOptional.get().getEnderecoLista().stream().map(EnderecoDto::new).toList();
     }
 
     public List<EnderecoDto> ativaEndereco(UUID id, UUID enderecoId) {
@@ -118,8 +113,27 @@ public class PessoaService {
 
         pessoaOptional.get().ativaEndereco(enderecoId);
 
-        List<EnderecoDto> listaEndereco = pessoaOptional.get().getEnderecoLista().stream().map(EnderecoDto::new).toList();
+        return pessoaOptional.get().getEnderecoLista().stream().map(EnderecoDto::new).toList();
 
-        return listaEndereco;
+    }
+
+    public EnderecoDto atualizaEndereco(UUID id, UUID enderecoId, EnderecoAtualizacao form) {
+        Optional<Pessoa> pessoaOptional = pessoaRepository.findById(id);
+
+        if(pessoaOptional.isEmpty()) {
+            throw new EntityNotFoundException("Pessoa não encontrada");
+        }
+
+        if(!pessoaOptional.get().buscaEndereco(enderecoId)) {
+            throw new EntityNotFoundException("Endereço não encontrado");
+        }
+
+        if(enderecoRepository.findById(enderecoId).isEmpty()) {
+            throw new EntityNotFoundException("Endereço não encontrado");
+        }
+        Endereco endereco = enderecoRepository.findById(enderecoId).get();
+        endereco.atualizarInformacoes(form);
+
+        return new EnderecoDto(endereco);
     }
 }
