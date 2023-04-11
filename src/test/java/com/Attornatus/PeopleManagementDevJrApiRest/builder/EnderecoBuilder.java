@@ -1,7 +1,6 @@
 package com.Attornatus.PeopleManagementDevJrApiRest.builder;
 
 import com.Attornatus.PeopleManagementDevJrApiRest.domain.endereco.Endereco;
-import com.Attornatus.PeopleManagementDevJrApiRest.domain.endereco.EnderecoDto;
 import com.Attornatus.PeopleManagementDevJrApiRest.domain.pessoa.Pessoa;
 import lombok.Builder;
 

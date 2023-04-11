@@ -1,6 +1,7 @@
 package com.Attornatus.PeopleManagementDevJrApiRest.controller;
 
 import com.Attornatus.PeopleManagementDevJrApiRest.builder.EnderecoDtoBuilder;
+import com.Attornatus.PeopleManagementDevJrApiRest.builder.EnderecoFormBuilder;
 import com.Attornatus.PeopleManagementDevJrApiRest.builder.PessoaCadastroBuilder;
 import com.Attornatus.PeopleManagementDevJrApiRest.builder.PessoaDtoBuilder;
 import com.Attornatus.PeopleManagementDevJrApiRest.domain.endereco.EnderecoDto;
@@ -57,20 +58,16 @@ class PessoaControllerTest {
     @InjectMocks
     private PessoaController pessoaController;
 
-
     @Test
-    @DisplayName("Deveria devolver codigo http 201 quando informaçôes estão validas")
+    @DisplayName("Teste para criar pessoa")
     @WithMockUser
     void criaPessoaDadosValidos() throws Exception {
-        // given
         PessoaCadastro pessoaCadastro = PessoaCadastroBuilder.builder().build().toPessoaCadastro();
         PessoaDto pessoaDto = PessoaDtoBuilder.builder().build().toPessoaDto();
         List<EnderecoDto> listaEnderecoDto = Collections.singletonList(EnderecoDtoBuilder.builder().build().toEnderecoDto());
 
-        // when
         given(pessoaService.criarPessoa(pessoaCadastro)).willReturn(pessoaDto);
 
-        // then
         var response = mockMvc.perform(post(PESSOA_API_URL_PATH)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(
@@ -91,7 +88,7 @@ class PessoaControllerTest {
     }
 
     @Test
-    @DisplayName("Deveria devolver codigo http 400 quando informações estão invalidas")
+    @DisplayName("Teste para validar mensagem de erro ao criar pessoa com dados inválidos")
     @WithMockUser
     void criaPessoaDadosInvalidos() throws Exception {
         mockMvc.perform(post(PESSOA_API_URL_PATH))
@@ -99,7 +96,7 @@ class PessoaControllerTest {
     }
 
     @Test
-    @DisplayName("Deveria devolver codigo http 200 quando buscado o id de um usuário existente")
+    @DisplayName("Teste para buscar pessoa por id")
     @WithMockUser
     void buscarPessoaPorIdValido() throws Exception {
         PessoaDto pessoaDto = PessoaDtoBuilder.builder().build().toPessoaDto();
@@ -116,7 +113,7 @@ class PessoaControllerTest {
     }
 
     @Test
-    @DisplayName("Deveria devolver codigo http 404 quando o id não é encontrado e uma mensagem de erro")
+    @DisplayName("Teste para validar mensagem de erro ao buscar pessoa por id inválido")
     @WithMockUser
     void buscarPessoaPorIdInvalido() throws Exception {
         UUID idIvalido = UUID.randomUUID();
@@ -126,11 +123,10 @@ class PessoaControllerTest {
         mockMvc.perform(get(PESSOA_API_URL_PATH + "/" + idIvalido))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("message").value("Pessoa não encontrada"));
-
     }
 
     @Test
-    @DisplayName("Deveria devolver codigo http 200 quando buscado o nome de uma pessoa existente")
+    @DisplayName("Teste para buscar pessoa por nome")
     @WithMockUser
     void buscarPessoaPorNome() throws Exception {
         PessoaDto pessoaDto = PessoaDtoBuilder.builder().build().toPessoaDto();
@@ -147,7 +143,7 @@ class PessoaControllerTest {
     }
 
     @Test
-    @DisplayName("Deveria devolver codigo http 404 quando o nome não é encontrado, e uma mensagem de erro")
+    @DisplayName("Teste para validar mensagem de erro ao buscar pessoa por nome de pessoa não existente")
     @WithMockUser
     void buscarPessoaPorNomeInvalido() throws Exception {
         String nome = "Giovanna Dafne";
@@ -157,11 +153,10 @@ class PessoaControllerTest {
         mockMvc.perform(get(PESSOA_API_URL_PATH + "/nome/" + nome))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("message").value("Pessoa não encontrada"));
-
     }
 
     @Test
-    @DisplayName("Deveria devolver codigo http 200 e uma lista de Pessoas")
+    @DisplayName("Teste para validar retorno ao listar pessoas")
     @WithMockUser
     void listarPessoas() throws Exception {
         PessoaDto pessoaDto = PessoaDtoBuilder.builder().build().toPessoaDto();
@@ -178,7 +173,7 @@ class PessoaControllerTest {
     }
 
     @Test
-    @DisplayName("Deveria devolver codigo http 404 e uma mensagem de erro")
+    @DisplayName("Teste para validar mensagem de erro ao listar pessoa com banco de dados vázio")
     @WithMockUser
     void listarPessoasSemPessoasCadastradas() throws Exception {
         given(pessoaService.listarPessoas())
@@ -190,7 +185,7 @@ class PessoaControllerTest {
     }
 
     @Test
-    @DisplayName("Deveria devolver codigo http 200 e dados do usuário que foi editado")
+    @DisplayName("Teste para validar retorno ao editar pessoa")
     @WithMockUser
     void editarPessoa() throws Exception {
         EnderecoDto enderecoDto = EnderecoDtoBuilder.builder().build().toEnderecoDto();
@@ -199,7 +194,6 @@ class PessoaControllerTest {
                 "Novo Nome",
                 LocalDate.of(1997, 1, 23));
 
-        // Configuração do comportamento do serviço mock
         when(pessoaService.editarPessoa(any(PessoaAtualizacao.class)))
                 .thenReturn(new PessoaDto(
                         pessoaAtualizacao.id(),
@@ -207,20 +201,17 @@ class PessoaControllerTest {
                         pessoaAtualizacao.nascimento(),
                         List.of(enderecoDto)));
 
-        // Execução da requisição PUT com o objeto atualizado
-        mockMvc.perform(put(PESSOA_API_URL_PATH) // Endpoint do seu controller
+        mockMvc.perform(put(PESSOA_API_URL_PATH)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(pessoaAtualizacao)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.nome").value("Novo Nome")); // Verifica o nome no JSON de resposta
+                .andExpect(jsonPath("$.nome").value("Novo Nome"));
 
-        // Verificação do comportamento esperado
         verify(pessoaService, times(1)).editarPessoa(eq(pessoaAtualizacao));
     }
 
-
     @Test
-    @DisplayName("Deveria devolver codigo http 404 e uma mensagem de erro")
+    @DisplayName("Teste para validar mensagem de erro ao tentar editar pessoa com id invalido")
     @WithMockUser
     void editarPessoaComIdInvalido() throws Exception {
         PessoaAtualizacao pessoaAtualizacao = new PessoaAtualizacao(
@@ -238,18 +229,11 @@ class PessoaControllerTest {
     }
 
     @Test
-    @DisplayName("Deveria devolver codigo http 201 e dados do endereço criado")
+    @DisplayName("Teste para criar endereço")
     @WithMockUser
     void criarEndereco() throws Exception {
-        // Criação do objeto de endereço a ser criado
-        EnderecoForm enderecoForm = new EnderecoForm(
-                "Rua dos Testes",
-                "12345678",
-                "123",
-                "Teste City"
-        );
+        EnderecoForm enderecoForm = EnderecoFormBuilder.builder().build().toEnderecoForm();
 
-        // Configuração do comportamento do serviço mock
         when(pessoaService.criarEndereco(any(UUID.class), any(EnderecoForm.class)))
                 .thenReturn(new EnderecoDto(
                         UUID.randomUUID(),
@@ -259,30 +243,22 @@ class PessoaControllerTest {
                         enderecoForm.cidade(),
                         true));
 
-        // Execução da requisição POST com o objeto de endereço
         mockMvc.perform(post(PESSOA_API_URL_PATH + "/" + UUID.randomUUID() + "/endereco") // Endpoint do seu controller
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(enderecoForm)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.logradouro").value("Rua dos Testes")); // Verifica o logradouro no JSON de resposta
+                .andExpect(jsonPath("$.logradouro").value("Bairro Morro do Sol, Rua Lagoa da Prata"));
 
-        // Verificação do comportamento esperado
         verify(pessoaService, times(1)).criarEndereco(any(UUID.class), eq(enderecoForm));
     }
 
     @Test
-    @DisplayName("Deveria devolver codigo http 404 e mensagem de erro")
+    @DisplayName("Teste para validar mensagem de erro ao tentar criar com id invalido")
     @WithMockUser
     void criarEnderecoParaIdInvalido() throws Exception {
         UUID pessoaId = UUID.randomUUID();
-        EnderecoForm enderecoForm = new EnderecoForm(
-                "Rua dos Testes",
-                "12345678",
-                "123",
-                "Teste City"
-        );
+        EnderecoForm enderecoForm = EnderecoFormBuilder.builder().build().toEnderecoForm();
 
-        // Configuração do comportamento do serviço mock
         given(pessoaService.criarEndereco(pessoaId, enderecoForm))
                 .willThrow(new EntityNotFoundException("Pessoa não encontrada"));
 
@@ -294,7 +270,7 @@ class PessoaControllerTest {
     }
 
     @Test
-    @DisplayName("Deveria devolver codigo http 200 com a lista de endereco")
+    @DisplayName("Teste para listar endereços")
     @WithMockUser
     void listaEndereco() throws Exception{
         // Dado
@@ -304,12 +280,10 @@ class PessoaControllerTest {
         EnderecoDto enderecoDto2 = new EnderecoDto(UUID.fromString("7e51778e-048a-4296-aa49-1831466d159d"),
         "Bairro Res. Veredas, Rua Andressa", "35680151", "162", "Itaúna", false);
         List<EnderecoDto> enderecoDtoList = Arrays.asList(enderecoDto1, enderecoDto2);
-
         String response = objectMapper.writeValueAsString(enderecoDtoList);
 
         given(pessoaService.listaEndereco(pessoaId)).willReturn(enderecoDtoList);
 
-        // Quando
         mockMvc.perform(get(PESSOA_API_URL_PATH + "/" + pessoaId + "/endereco")
                 .param("id", "028683c6-0eff-4cbf-8cc6-33200ba425b2")
                 .param("logradouro", "Bairro Morro do Sol, Rua Lagoa da Prata")
@@ -320,102 +294,87 @@ class PessoaControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().json(response));
 
-        // Então
         verify(pessoaService, times(1)).listaEndereco(any(UUID.class));
     }
 
     @Test
-    @DisplayName("Deveria devolver codigo http 404 quando id é Invalido")
+    @DisplayName("Teste para validar mensagem de erro ao listar endereços com id da pessoa Inválido")
     @WithMockUser
     public void testeListaEnderecoPessoaNaoEncontrada() throws Exception {
-        // Dado
         UUID id = UUID.randomUUID();
 
         when(pessoaService.listaEndereco(any(UUID.class)))
                 .thenThrow(new EntityNotFoundException("Pessoa não encontrada"));
 
-        // Quando
         mockMvc.perform(get(PESSOA_API_URL_PATH + "/"  + id + "/endereco"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("message").value("Pessoa não encontrada"));
 
-        // Então
         verify(pessoaService, times(1)).listaEndereco(Mockito.eq(id));
     }
 
     @Test
-    @DisplayName("Deveria devolver codigo http 200 com a lista de endereco")
+    @DisplayName("Teste para ativar endereço")
     @WithMockUser
     void ativaEnderecoComPessoaExistenteEnderecoExistente() throws Exception {
-            // Dado
-            UUID pessoaId = UUID.randomUUID();
-            UUID enderecoId = UUID.fromString("028683c6-0eff-4cbf-8cc6-33200ba425b2");
-            EnderecoDto enderecoDto1 = new EnderecoDto(enderecoId,
-                    "Bairro Morro do Sol, Rua Lagoa da Prata", "35680286", "72", "Itaúna", true);
-            EnderecoDto enderecoDto2 = new EnderecoDto(UUID.fromString("7e51778e-048a-4296-aa49-1831466d159d"),
-                    "Bairro Res. Veredas, Rua Andressa", "35680151", "162", "Itaúna", false);
-            List<EnderecoDto> enderecoDtoList = Arrays.asList(enderecoDto1, enderecoDto2);
+        UUID pessoaId = UUID.randomUUID();
+        UUID enderecoId = UUID.fromString("028683c6-0eff-4cbf-8cc6-33200ba425b2");
+        EnderecoDto enderecoDto1 = new EnderecoDto(enderecoId,
+                "Bairro Morro do Sol, Rua Lagoa da Prata", "35680286", "72", "Itaúna", true);
+        EnderecoDto enderecoDto2 = new EnderecoDto(UUID.fromString("7e51778e-048a-4296-aa49-1831466d159d"),
+                "Bairro Res. Veredas, Rua Andressa", "35680151", "162", "Itaúna", false);
+        List<EnderecoDto> enderecoDtoList = Arrays.asList(enderecoDto1, enderecoDto2);
+        String response = objectMapper.writeValueAsString(enderecoDtoList);
+        given(pessoaService.ativaEndereco(pessoaId, enderecoId)).willReturn(enderecoDtoList);
 
-            String response = objectMapper.writeValueAsString(enderecoDtoList);
+        mockMvc.perform(
+                post(PESSOA_API_URL_PATH + "/" + pessoaId + "/ativaEndereco/" + enderecoId)
+                        .param("id", "028683c6-0eff-4cbf-8cc6-33200ba425b2")
+                        .param("logradouro", "Bairro Morro do Sol, Rua Lagoa da Prata")
+                        .param("cep", "35680286")
+                        .param("numero", "162")
+                        .param("cidade", "Itaúna")
+                        .param("ativo", "true"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().json(response));
 
-            given(pessoaService.ativaEndereco(pessoaId, enderecoId)).willReturn(enderecoDtoList);
-
-            // Quando
-            mockMvc.perform(
-                    post(PESSOA_API_URL_PATH + "/" + pessoaId + "/ativaEndereco/" + enderecoId)
-                            .param("id", "028683c6-0eff-4cbf-8cc6-33200ba425b2")
-                            .param("logradouro", "Bairro Morro do Sol, Rua Lagoa da Prata")
-                            .param("cep", "35680286")
-                            .param("numero", "162")
-                            .param("cidade", "Itaúna")
-                            .param("ativo", "true"))
-                    .andExpect(status().isOk())
-                    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(content().json(response));
-
-            // Então
-            verify(pessoaService, times(1)).ativaEndereco(any(UUID.class), any(UUID.class));
+        verify(pessoaService, times(1)).ativaEndereco(any(UUID.class), any(UUID.class));
     }
 
 
     @Test
-    @DisplayName("Deveria devolver codigo http 404 com uma mensagem de erro")
+    @DisplayName("Teste para validar mensagem de erro ao tentar ativar endereço com id de pessoa inválido")
     @WithMockUser
     void ativaEnderecoComPessoaInexistenteEnderecoExistente() throws Exception{
-        // Dado
         UUID pessoaId = UUID.randomUUID();
         UUID enderecoId = UUID.fromString("028683c6-0eff-4cbf-8cc6-33200ba425b2");
 
         given(pessoaService.ativaEndereco(any(UUID.class), any(UUID.class)))
                 .willThrow( new EntityNotFoundException("Pessoa não encontrada"));
 
-        // Quando
         mockMvc.perform(
                         post(PESSOA_API_URL_PATH + "/" + pessoaId + "/ativaEndereco/" + enderecoId))
                                 .andExpect(status().isNotFound())
                                 .andExpect(jsonPath("message").value("Pessoa não encontrada"));
 
-        // Então
         verify(pessoaService, times(1)).ativaEndereco(any(UUID.class), any(UUID.class));
     }
 
     @Test
-    @DisplayName("Deveria devolver codigo http 404 com uma mensagem de erro")
+    @DisplayName("Teste para validar mensagem de erro ao tentar ativar endereço com id de endereço inválido")
     @WithMockUser
     void ativaEnderecoComPessoaExistenteEnderecoInexistente() throws Exception{
-        // Dado
         UUID pessoaId = UUID.randomUUID();
         UUID enderecoId = UUID.fromString("028683c6-0eff-4cbf-8cc6-33200ba425b2");
 
         given(pessoaService.ativaEndereco(pessoaId, enderecoId)).willThrow( new EntityNotFoundException("Endereço não encontrado"));
 
-        // Quando
         mockMvc.perform(
                         post(PESSOA_API_URL_PATH + "/" + pessoaId + "/ativaEndereco/" + enderecoId))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("message").value("Endereço não encontrado"));
 
-        // Então
         verify(pessoaService, times(1)).ativaEndereco(any(UUID.class), any(UUID.class));
     }
 }

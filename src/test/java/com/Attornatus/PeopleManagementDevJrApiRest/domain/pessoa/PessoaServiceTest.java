@@ -6,10 +6,12 @@ import com.Attornatus.PeopleManagementDevJrApiRest.domain.endereco.EnderecoDto;
 import com.Attornatus.PeopleManagementDevJrApiRest.domain.endereco.EnderecoForm;
 import com.Attornatus.PeopleManagementDevJrApiRest.domain.endereco.EnderecoRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDate;
@@ -23,6 +25,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
+@DataJpaTest
 class PessoaServiceTest {
 
     @Mock
@@ -35,6 +38,7 @@ class PessoaServiceTest {
     private PessoaService pessoaService;
 
     @Test
+    @DisplayName("Teste para criar pessoa")
     void criarPessoa() {
         PessoaCadastro pessoaCadastro = PessoaCadastroBuilder.builder().build().toPessoaCadastro();
         Pessoa pessoa = new Pessoa(pessoaCadastro);
@@ -46,7 +50,6 @@ class PessoaServiceTest {
 
         verify(pessoaRepository, times(1)).save(any(Pessoa.class));
 
-        // Verificar se o retorno do serviço é o esperado
         assertNotNull(pessoaDto);
         assertEquals(pessoaSalva.getNome(), pessoaDto.nome());
         assertEquals(pessoaSalva.getNascimento(), pessoaDto.nascimento());
@@ -56,6 +59,7 @@ class PessoaServiceTest {
     }
 
     @Test
+    @DisplayName("Teste para buscar pessoa")
     void buscarPessoa() {
         UUID id = UUID.fromString("d1e00b34-6895-45b8-b884-6e41975b0580");
         Pessoa pessoa = new Pessoa();
@@ -65,29 +69,26 @@ class PessoaServiceTest {
 
         when(pessoaRepository.findById(id)).thenReturn(Optional.of(pessoa));
 
-        // Quando
         PessoaDto pessoaDto = pessoaService.buscarPessoa(id);
 
-        // Então
         assertNotNull(pessoaDto);
         assertEquals(id, pessoaDto.id());
         assertEquals("Giovanna", pessoaDto.nome());
         assertEquals(LocalDate.parse("2001-03-09"), pessoaDto.nascimento());
-
     }
 
     @Test
+    @DisplayName("Teste para validar envio de exception ao buscar pessoa não existente")
     public void testBuscarPessoaNaoEncontrada() {
-        // Dado
         UUID id = UUID.fromString("d1e00b34-6895-45b8-b884-6e41975b0580");
 
         when(pessoaRepository.findById(id)).thenReturn(Optional.empty());
 
-        // Então
         assertThrows(EntityNotFoundException.class, () -> pessoaService.buscarPessoa(id));
     }
 
     @Test
+    @DisplayName("Teste para editar pessoa")
     public void testEditarPessoa_Existente() {
         // Dado que o repository retorna um Optional contendo uma Pessoa existente
         UUID pessoaId = UUID.randomUUID();
@@ -111,21 +112,19 @@ class PessoaServiceTest {
     }
 
     @Test
+    @DisplayName("Teste para validar envio de exception ao tentar editar pessoa não existente")
     public void testEditarPessoa_NaoExistente() {
-        // Dado que o repository retorna um Optional vazio, indicando que a Pessoa não foi encontrada
         UUID pessoaId = UUID.randomUUID();
         PessoaAtualizacao form = new PessoaAtualizacao(pessoaId, "Novo Nome", LocalDate.now());
         when(pessoaRepository.findById(pessoaId)).thenReturn(Optional.empty());
 
-        // Quando o método editarPessoa é chamado com um ID inválido
-        // Então uma EntityNotFoundException deve ser lançada
         assertThrows(EntityNotFoundException.class, () -> pessoaService.editarPessoa(form));
 
-        // E o método findById do repository deve ter sido chamado uma vez com o ID correto
         verify(pessoaRepository, times(1)).findById(pessoaId);
     }
 
     @Test
+    @DisplayName("Teste para listar pessoas")
     void testListarPessoas() {
         PessoaDto pessoaDto = PessoaDtoBuilder.builder().build().toPessoaDto();
         Pessoa pessoa = new Pessoa();
@@ -141,6 +140,7 @@ class PessoaServiceTest {
     }
 
     @Test
+    @DisplayName("Teste para validar exception ao tentar lista pessoas com o banco de dados vázio")
     public void testListarPessoas_PessoasNaoExiste() {
         when(pessoaRepository.findAll()).thenReturn(Collections.emptyList());
 
@@ -150,58 +150,47 @@ class PessoaServiceTest {
     }
 
     @Test
-    public void testBuscarPessoaPorNome_Existente() {
-        // Dado que o repository retorna um Optional contendo uma Pessoa existente
+    @DisplayName("Teste para buscar pessoa por nome")
+    public void testBuscarPessoaPorNome() {
         String nome = "João";
         Pessoa pessoa = new Pessoa();
         pessoa.setNome(nome);
         when(pessoaRepository.findByNome(nome)).thenReturn(Optional.of(pessoa));
 
-        // Quando o método buscarPessoaPorNome é chamado com um nome válido
         PessoaDto pessoaDto = pessoaService.buscarPessoaPorNome(nome);
 
-        // Então o resultado não deve ser nulo
         assertNotNull(pessoaDto);
-        // E o resultado deve ter o mesmo nome e informações da Pessoa encontrada
         assertEquals(pessoa.getNome(), pessoaDto.nome());
-        // E o método findByNome do repository deve ter sido chamado uma vez com o nome correto
         verify(pessoaRepository, times(1)).findByNome(nome);
     }
 
     @Test
-    public void testBuscarPessoaPorNome_NaoExistente() {
-        // Dado que o repository retorna um Optional vazio, indicando que a Pessoa não foi encontrada
+    @DisplayName("Teste para validar exception ao tentar buscar pessoa por nome não existente")
+    public void testBuscarPessoaPorNomeNaoExistente() {
         String nome = "Maria";
         when(pessoaRepository.findByNome(nome)).thenReturn(Optional.empty());
 
-        // Quando o método buscarPessoaPorNome é chamado com um nome inválido
-        // Então uma EntityNotFoundException deve ser lançada
         assertThrows(EntityNotFoundException.class, () -> pessoaService.buscarPessoaPorNome(nome));
 
-        // E o método findByNome do repository deve ter sido chamado uma vez com o nome correto
         verify(pessoaRepository, times(1)).findByNome(nome);
     }
 
     @Test
+    @DisplayName("Teste para validar exception ao tentar criar endereço para pessoa não existente")
     public void testCriarEndereco_PessoaNaoExistente() {
-        // Dado que o repository retorna um Optional vazio, indicando que a Pessoa não foi encontrada
         UUID pessoaId = UUID.randomUUID();
-        EnderecoForm form = new EnderecoForm("Rua A", "12345678", "123", "Cidade A");
+        EnderecoForm form = EnderecoFormBuilder.builder().build().toEnderecoForm();
         when(pessoaRepository.findById(pessoaId)).thenReturn(Optional.empty());
 
-        // Quando o método criarEndereco é chamado com um ID de Pessoa inválido
-        // Então uma EntityNotFoundException deve ser lançada
         assertThrows(EntityNotFoundException.class, () -> pessoaService.criarEndereco(pessoaId, form));
 
-        // E o método findById do repository de Pessoa deve ter sido chamado uma vez com o ID de Pessoa correto
         verify(pessoaRepository, times(1)).findById(pessoaId);
-        // E o método save do repository de Endereco não deve ter sido chamado
         verifyNoInteractions(enderecoRepository);
     }
 
     @Test
-    public void testListaEndereco_PessoaExistente() {
-        // Dado que o repository retorna um Optional contendo uma Pessoa existente
+    @DisplayName("Teste para listar endereços")
+    public void testListaEndereco() {
         UUID pessoaId = UUID.randomUUID();
         Pessoa pessoa = new Pessoa();
         Endereco endereco1 = new Endereco();
@@ -222,34 +211,27 @@ class PessoaServiceTest {
         pessoa.getEnderecoLista().add(endereco2);
         when(pessoaRepository.findById(pessoaId)).thenReturn(Optional.of(pessoa));
 
-        // Quando o método listaEndereco é chamado com um ID de Pessoa válido
         List<EnderecoDto> listaEnderecoDto = pessoaService.listaEndereco(pessoaId);
 
-        // Então o resultado não deve ser nulo
         assertNotNull(listaEnderecoDto);
-        // E o tamanho da lista deve ser igual ao tamanho da lista de Enderecos da Pessoa
         assertEquals(pessoa.getEnderecoLista().size(), listaEnderecoDto.size());
-        // E o método findById do repository de Pessoa deve ter sido chamado uma vez com o ID de Pessoa correto
         verify(pessoaRepository, times(1)).findById(pessoaId);
     }
 
     @Test
+    @DisplayName("Teste para validar exception ao tentar listar endereços para pessoa não existente")
     public void testListaEndereco_PessoaNaoExistente() {
-        // Dado que o repository retorna um Optional vazio, indicando que a Pessoa não foi encontrada
         UUID pessoaId = UUID.randomUUID();
         when(pessoaRepository.findById(pessoaId)).thenReturn(Optional.empty());
 
-        // Quando o método listaEndereco é chamado com um ID de Pessoa inválido
-        // Então uma EntityNotFoundException deve ser lançada
         assertThrows(EntityNotFoundException.class, () -> pessoaService.listaEndereco(pessoaId));
 
-        // E o método findById do repository de Pessoa deve ter sido chamado uma vez com o ID de Pessoa correto
         verify(pessoaRepository, times(1)).findById(pessoaId);
     }
 
     @Test
+    @DisplayName("Teste para ativar endereço e verificar se o anterior foi desativado")
     public void testAtivaEndereco_PessoaComEnderecoAtivo() {
-        // Criação dos dados de teste
         UUID id = UUID.fromString("d1e00b34-6895-45b8-b884-6e41975b0580");
         Pessoa pessoa = new Pessoa();
         pessoa.setId(id);
@@ -266,17 +248,13 @@ class PessoaServiceTest {
         pessoa.adicionarEndereco(endereco1);
         pessoa.adicionarEndereco(endereco2);
 
-        // Configuração do comportamento do mock do PessoaRepository
         when(pessoaRepository.findById(pessoa.getId())).thenReturn(Optional.of(pessoa));
 
-        // Chamada ao método a ser testado
         List<EnderecoDto> listaEndereco = pessoaService.ativaEndereco(pessoa.getId(), endereco1.getId());
 
-        // Verificações de resultado
         assertNotNull(listaEndereco);
-        assertEquals(2, listaEndereco.size()); // Verifica se retornou dois endereços
+        assertEquals(2, listaEndereco.size());
 
-        // Verifica se o endereço 1 foi ativado e o endereço 2 foi desativado
         EnderecoDto endereco1Atualizado = listaEndereco.get(0);
         assertEquals(endereco1.getId(), endereco1Atualizado.id());
         assertEquals("Bairro Morro do Sol, Rua Lagoa da Prata", endereco1Atualizado.logradouro());
@@ -293,11 +271,11 @@ class PessoaServiceTest {
         assertEquals("Itaúna", endereco2Atualizado.cidade());
         assertFalse(endereco2Atualizado.ativo());
 
-        // Verificações de interação com o PessoaRepository
         verify(pessoaRepository, times(1)).findById(pessoa.getId());
     }
 
     @Test
+    @DisplayName("Teste para validar exception ao tentar ativar endereço para pessoa não existente")
     public void testAtivaEndereco_PessoaNaoExiste() {
         UUID pessoaId = UUID.randomUUID();
         when(pessoaRepository.findById(pessoaId)).thenReturn(Optional.empty());
@@ -308,6 +286,7 @@ class PessoaServiceTest {
     }
 
     @Test
+    @DisplayName("Teste para validar exception ao tentar ativar endereço para endereço não existente")
     public void testAtivaEndereco_EnderecoNaoExiste() {
         Pessoa pessoa = new Pessoa();
         pessoa.setId(UUID.randomUUID());
