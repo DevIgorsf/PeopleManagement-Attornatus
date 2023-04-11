@@ -45,7 +45,7 @@ public class Endereco {
         this.ativo = ativo;
     }
 
-    public void atualizarInformacoes(EnderecoForm dados) {
+    public void atualizarInformacoes(EnderecoAtualizacao dados) {
         if (dados.logradouro() != null) {
             this.logradouro = dados.logradouro();
         }
