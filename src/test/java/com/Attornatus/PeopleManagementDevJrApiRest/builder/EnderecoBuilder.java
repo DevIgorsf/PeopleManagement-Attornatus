@@ -1,12 +1,14 @@
 package com.Attornatus.PeopleManagementDevJrApiRest.builder;
 
+import com.Attornatus.PeopleManagementDevJrApiRest.domain.endereco.Endereco;
 import com.Attornatus.PeopleManagementDevJrApiRest.domain.endereco.EnderecoDto;
+import com.Attornatus.PeopleManagementDevJrApiRest.domain.pessoa.Pessoa;
 import lombok.Builder;
 
 import java.util.UUID;
 
 @Builder
-public class EnderecoDtoBuilder {
+public class EnderecoBuilder {
 
     @Builder.Default
     private UUID id = UUID.fromString("ed1350db-2bc0-4ec0-a0a8-5efa624b6e3f");
@@ -20,13 +22,16 @@ public class EnderecoDtoBuilder {
     private String cidade = "Itaúna";
     @Builder.Default
     private Boolean ativo = false;
-    public EnderecoDto toEnderecoDto() {
-        return new EnderecoDto(id,
+
+    @Builder.Default
+    private Pessoa pessoa = PessoaBuilder.builder().build().toPessoa();
+    public Endereco toEndereco() {
+        return new Endereco(id,
                 logradouro,
                 cep,
                 numero,
                 cidade,
-                ativo);
+                ativo,
+                pessoa);
     }
-
 }

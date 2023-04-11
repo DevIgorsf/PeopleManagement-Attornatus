@@ -1,6 +1,5 @@
 package com.Attornatus.PeopleManagementDevJrApiRest.builder;
 
-import com.Attornatus.PeopleManagementDevJrApiRest.domain.endereco.EnderecoDto;
 import com.Attornatus.PeopleManagementDevJrApiRest.domain.endereco.EnderecoForm;
 import lombok.Builder;
 

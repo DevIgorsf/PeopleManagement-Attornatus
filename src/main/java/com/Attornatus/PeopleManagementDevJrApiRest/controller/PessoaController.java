@@ -2,13 +2,17 @@ package com.Attornatus.PeopleManagementDevJrApiRest.controller;
 
 import com.Attornatus.PeopleManagementDevJrApiRest.domain.endereco.EnderecoDto;
 import com.Attornatus.PeopleManagementDevJrApiRest.domain.endereco.EnderecoForm;
-import com.Attornatus.PeopleManagementDevJrApiRest.domain.pessoa.*;
+import com.Attornatus.PeopleManagementDevJrApiRest.domain.pessoa.PessoaAtualizacao;
+import com.Attornatus.PeopleManagementDevJrApiRest.domain.pessoa.PessoaCadastro;
+import com.Attornatus.PeopleManagementDevJrApiRest.domain.pessoa.PessoaDto;
+import com.Attornatus.PeopleManagementDevJrApiRest.domain.pessoa.PessoaService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -41,7 +45,7 @@ public class PessoaController {
 
     @GetMapping
     public ResponseEntity<List<PessoaDto>> listarPessoas() {
-        return ResponseEntity.status(HttpStatus.OK).body(pessoaService.ListarPessoas());
+        return ResponseEntity.status(HttpStatus.OK).body(pessoaService.listarPessoas());
     }
 
     @PutMapping
@@ -59,11 +63,11 @@ public class PessoaController {
     @PostMapping("/{id}/ativaEndereco/{enderecoId}")
     @Transactional
     public ResponseEntity<List<EnderecoDto>> ativaEndereco(@PathVariable UUID id, @PathVariable UUID enderecoId) {
-        return ResponseEntity.status(HttpStatus.OK).body(pessoaService.AtivaEndereco(id, enderecoId));
+        return ResponseEntity.status(HttpStatus.OK).body(pessoaService.ativaEndereco(id, enderecoId));
     }
 
     @GetMapping("/{id}/endereco")
     public ResponseEntity<List<EnderecoDto>> listaEndereco(@PathVariable UUID id) {
-        return ResponseEntity.status(HttpStatus.OK).body(pessoaService.ListaEndereco(id));
+        return ResponseEntity.status(HttpStatus.OK).body(pessoaService.listaEndereco(id));
     }
 }

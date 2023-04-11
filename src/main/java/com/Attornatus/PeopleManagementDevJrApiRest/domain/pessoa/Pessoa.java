@@ -3,8 +3,12 @@ package com.Attornatus.PeopleManagementDevJrApiRest.domain.pessoa;
 import com.Attornatus.PeopleManagementDevJrApiRest.domain.endereco.Endereco;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;

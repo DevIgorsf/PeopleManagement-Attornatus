@@ -7,6 +7,7 @@ import com.Attornatus.PeopleManagementDevJrApiRest.domain.endereco.EnderecoRepos
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -24,8 +25,8 @@ public class PessoaService {
         this.enderecoRepository = enderecoRepository;
     }
 
-    public PessoaDto criarPessoa(PessoaCadastro pessoaForm) {
-        Pessoa pessoa = new Pessoa(pessoaForm);
+    public PessoaDto criarPessoa(PessoaCadastro pessoaCastro) {
+        Pessoa pessoa = new Pessoa(pessoaCastro);
 
         pessoaRepository.save(pessoa);
 
@@ -55,7 +56,7 @@ public class PessoaService {
         return new PessoaDto(pessoa);
     }
 
-    public List<PessoaDto> ListarPessoas() {
+    public List<PessoaDto> listarPessoas() {
         List<PessoaDto> pessoaLista = pessoaRepository.findAll().stream().map(PessoaDto::new).toList();
 
         if(pessoaLista.isEmpty()) {
@@ -92,7 +93,7 @@ public class PessoaService {
         return new EnderecoDto(enderecoSalvo);
     }
 
-    public List<EnderecoDto> ListaEndereco(UUID id) {
+    public List<EnderecoDto> listaEndereco(UUID id) {
         Optional<Pessoa> pessoaOptional = pessoaRepository.findById(id);
 
         if( pessoaOptional.isEmpty()) {
@@ -104,7 +105,7 @@ public class PessoaService {
         return listaEndereco;
     }
 
-    public List<EnderecoDto> AtivaEndereco(UUID id, UUID enderecoId) {
+    public List<EnderecoDto> ativaEndereco(UUID id, UUID enderecoId) {
         Optional<Pessoa> pessoaOptional = pessoaRepository.findById(id);
 
         if(pessoaOptional.isEmpty()) {

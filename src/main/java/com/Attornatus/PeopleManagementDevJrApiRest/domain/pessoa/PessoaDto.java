@@ -2,6 +2,7 @@ package com.Attornatus.PeopleManagementDevJrApiRest.domain.pessoa;
 
 import com.Attornatus.PeopleManagementDevJrApiRest.domain.endereco.EnderecoDto;
 import com.fasterxml.jackson.annotation.JsonInclude;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
