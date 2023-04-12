@@ -22,7 +22,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.nio.charset.StandardCharsets;
@@ -60,7 +59,6 @@ class PessoaControllerTest {
 
     @Test
     @DisplayName("Teste para criar pessoa")
-    @WithMockUser
     void criaPessoaDadosValidos() throws Exception {
         PessoaCadastro pessoaCadastro = PessoaCadastroBuilder.builder().build().toPessoaCadastro();
         PessoaDto pessoaDto = PessoaDtoBuilder.builder().build().toPessoaDto();
@@ -89,7 +87,6 @@ class PessoaControllerTest {
 
     @Test
     @DisplayName("Teste para validar mensagem de erro ao criar pessoa com dados inválidos")
-    @WithMockUser
     void criaPessoaDadosInvalidos() throws Exception {
         mockMvc.perform(post(PESSOA_API_URL_PATH))
                 .andExpect(status().isBadRequest());
@@ -97,7 +94,6 @@ class PessoaControllerTest {
 
     @Test
     @DisplayName("Teste para buscar pessoa por id")
-    @WithMockUser
     void buscarPessoaPorIdValido() throws Exception {
         PessoaDto pessoaDto = PessoaDtoBuilder.builder().build().toPessoaDto();
         UUID pessoaId = UUID.fromString("0a692751-a7ce-4dd1-ab80-55f9e653de75");
@@ -114,7 +110,6 @@ class PessoaControllerTest {
 
     @Test
     @DisplayName("Teste para validar mensagem de erro ao buscar pessoa por id inválido")
-    @WithMockUser
     void buscarPessoaPorIdInvalido() throws Exception {
         UUID idIvalido = UUID.randomUUID();
         given(pessoaService.buscarPessoa(idIvalido))
@@ -127,7 +122,6 @@ class PessoaControllerTest {
 
     @Test
     @DisplayName("Teste para buscar pessoa por nome")
-    @WithMockUser
     void buscarPessoaPorNome() throws Exception {
         PessoaDto pessoaDto = PessoaDtoBuilder.builder().build().toPessoaDto();
         String nome = "Giovanna Dafne";
@@ -144,7 +138,6 @@ class PessoaControllerTest {
 
     @Test
     @DisplayName("Teste para validar mensagem de erro ao buscar pessoa por nome de pessoa não existente")
-    @WithMockUser
     void buscarPessoaPorNomeInvalido() throws Exception {
         String nome = "Giovanna Dafne";
         given(pessoaService.buscarPessoaPorNome(nome))
@@ -157,7 +150,6 @@ class PessoaControllerTest {
 
     @Test
     @DisplayName("Teste para validar retorno ao listar pessoas")
-    @WithMockUser
     void listarPessoas() throws Exception {
         PessoaDto pessoaDto = PessoaDtoBuilder.builder().build().toPessoaDto();
 
@@ -174,7 +166,6 @@ class PessoaControllerTest {
 
     @Test
     @DisplayName("Teste para validar mensagem de erro ao listar pessoa com banco de dados vázio")
-    @WithMockUser
     void listarPessoasSemPessoasCadastradas() throws Exception {
         given(pessoaService.listarPessoas())
                 .willThrow(new EntityNotFoundException("Não há pessoas cadastradas"));
@@ -186,7 +177,6 @@ class PessoaControllerTest {
 
     @Test
     @DisplayName("Teste para validar retorno ao editar pessoa")
-    @WithMockUser
     void editarPessoa() throws Exception {
         EnderecoDto enderecoDto = EnderecoDtoBuilder.builder().build().toEnderecoDto();
         PessoaAtualizacao pessoaAtualizacao = new PessoaAtualizacao(
@@ -212,7 +202,6 @@ class PessoaControllerTest {
 
     @Test
     @DisplayName("Teste para validar mensagem de erro ao tentar editar pessoa com id invalido")
-    @WithMockUser
     void editarPessoaComIdInvalido() throws Exception {
         PessoaAtualizacao pessoaAtualizacao = new PessoaAtualizacao(
                 UUID.fromString("0a692751-a7ce-4dd1-ab80-55f9e653de75"),
@@ -230,7 +219,6 @@ class PessoaControllerTest {
 
     @Test
     @DisplayName("Teste para criar endereço")
-    @WithMockUser
     void criarEndereco() throws Exception {
         EnderecoForm enderecoForm = EnderecoFormBuilder.builder().build().toEnderecoForm();
 
@@ -254,7 +242,6 @@ class PessoaControllerTest {
 
     @Test
     @DisplayName("Teste para validar mensagem de erro ao tentar criar com id invalido")
-    @WithMockUser
     void criarEnderecoParaIdInvalido() throws Exception {
         UUID pessoaId = UUID.randomUUID();
         EnderecoForm enderecoForm = EnderecoFormBuilder.builder().build().toEnderecoForm();
@@ -271,7 +258,6 @@ class PessoaControllerTest {
 
     @Test
     @DisplayName("Teste para listar endereços")
-    @WithMockUser
     void listaEndereco() throws Exception{
         // Dado
         UUID pessoaId = UUID.randomUUID();
@@ -299,7 +285,6 @@ class PessoaControllerTest {
 
     @Test
     @DisplayName("Teste para validar mensagem de erro ao listar endereços com id da pessoa Inválido")
-    @WithMockUser
     public void testeListaEnderecoPessoaNaoEncontrada() throws Exception {
         UUID id = UUID.randomUUID();
 
@@ -315,7 +300,6 @@ class PessoaControllerTest {
 
     @Test
     @DisplayName("Teste para ativar endereço")
-    @WithMockUser
     void ativaEnderecoComPessoaExistenteEnderecoExistente() throws Exception {
         UUID pessoaId = UUID.randomUUID();
         UUID enderecoId = UUID.fromString("028683c6-0eff-4cbf-8cc6-33200ba425b2");
@@ -345,7 +329,6 @@ class PessoaControllerTest {
 
     @Test
     @DisplayName("Teste para validar mensagem de erro ao tentar ativar endereço com id de pessoa inválido")
-    @WithMockUser
     void ativaEnderecoComPessoaInexistenteEnderecoExistente() throws Exception{
         UUID pessoaId = UUID.randomUUID();
         UUID enderecoId = UUID.fromString("028683c6-0eff-4cbf-8cc6-33200ba425b2");
@@ -363,7 +346,6 @@ class PessoaControllerTest {
 
     @Test
     @DisplayName("Teste para validar mensagem de erro ao tentar ativar endereço com id de endereço inválido")
-    @WithMockUser
     void ativaEnderecoComPessoaExistenteEnderecoInexistente() throws Exception{
         UUID pessoaId = UUID.randomUUID();
         UUID enderecoId = UUID.fromString("028683c6-0eff-4cbf-8cc6-33200ba425b2");
