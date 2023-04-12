@@ -14,7 +14,8 @@ Avaliação Desenvolvedor Back-end Attornatus
 •	Poder informar qual endereço é o principal da pessoa
 
 📄 Documentação
-A documentação das funcionalidades da aplicação pode ser acessada neste link: 
+A documentação das funcionalidades da aplicação pode ser acessada neste link:
+http://localhost:8080/swagger-ui/index.html
 
 🛠 Tecnologias
 As seguintes tecnologias foram utilizadas no desenvolvimento da API Rest do projeto:
